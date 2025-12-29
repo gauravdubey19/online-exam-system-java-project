@@ -1,0 +1,16 @@
+com/project/onlineexam/repository/QuestionRepository.class
+com/project/onlineexam/model/Result.class
+com/project/onlineexam/repository/ExamRepository.class
+com/project/onlineexam/controller/AuthController.class
+com/project/onlineexam/controller/StudentController.class
+com/project/onlineexam/service/UserService.class
+com/project/onlineexam/model/Exam.class
+com/project/onlineexam/repository/ResultRepository.class
+com/project/onlineexam/repository/UserRepository.class
+com/project/onlineexam/controller/AdminController.class
+com/project/onlineexam/config/WebConfig.class
+com/project/onlineexam/model/User.class
+com/project/onlineexam/service/ExamService.class
+com/project/onlineexam/model/Question.class
+com/project/onlineexam/OnlineExamApplication.class
+com/project/onlineexam/config/DataInitializer.class
