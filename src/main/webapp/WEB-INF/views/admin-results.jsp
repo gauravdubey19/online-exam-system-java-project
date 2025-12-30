@@ -50,8 +50,10 @@
                                     <table class="table table-dark">
                                         <thead>
                                             <tr>
+                                                <th>Photo</th>
                                                 <th>Student</th>
                                                 <th>Exam</th>
+                                                <th>Status</th>
                                                 <th>Score</th>
                                                 <th>Percentage</th>
                                                 <th>Date</th>
@@ -60,6 +62,16 @@
                                         <tbody>
                                             <c:forEach var="result" items="${results}">
                                                 <tr>
+                                                    <td>
+                                                        <c:if test="${not empty result.photoUrl}">
+                                                            <img src="${result.photoUrl}" alt="Student Photo" 
+                                                                style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer;"
+                                                                onclick="showPhoto('${result.photoUrl}')">
+                                                        </c:if>
+                                                        <c:if test="${empty result.photoUrl}">
+                                                            <span class="text-muted">No photo</span>
+                                                        </c:if>
+                                                    </td>
                                                     <td>
                                                         <c:set var="student"
                                                             value="${userService.findById(result.studentId).orElse(null)}" />
@@ -71,13 +83,33 @@
                                                             </c:if>
                                                         </c:forEach>
                                                     </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${result.status == 'COMPLETED'}">
+                                                                <span class="badge bg-success">Completed</span>
+                                                            </c:when>
+                                                            <c:when test="${result.status == 'IN_PROGRESS'}">
+                                                                <span class="badge bg-warning">In Progress</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge bg-secondary">Not Attempted</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
                                                     <td>${result.score}/${result.totalQuestions}</td>
                                                     <td>
-                                                        <c:set var="pct"
-                                                            value="${(result.score * 100.0) / result.totalQuestions}" />
-                                                        <span class="${pct >= 60 ? 'text-success' : 'text-danger'}">
-                                                            ${String.format("%.1f", pct)}%
-                                                        </span>
+                                                        <c:choose>
+                                                            <c:when test="${result.totalQuestions > 0}">
+                                                                <c:set var="pct"
+                                                                    value="${(result.score * 100.0) / result.totalQuestions}" />
+                                                                <span class="${pct >= 60 ? 'text-success' : 'text-danger'}">
+                                                                    ${String.format("%.1f", pct)}%
+                                                                </span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="text-muted">-</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </td>
                                                     <td>
                                                         <fmt:formatDate value="${result.submittedAt}"
@@ -94,6 +126,11 @@
                 </div>
 
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script>
+                    function showPhoto(url) {
+                        window.open(url, '_blank', 'width=600,height=600');
+                    }
+                </script>
             </body>
 
             </html>

@@ -9,4 +9,5 @@ public interface ResultRepository extends MongoRepository<Result, String> {
     List<Result> findByStudentId(String studentId);
     List<Result> findByExamId(String examId);
     Optional<Result> findByStudentIdAndExamId(String studentId, String examId);
+    Optional<Result> findByStudentIdAndExamIdAndStatusNot(String studentId, String examId, String status);
 }

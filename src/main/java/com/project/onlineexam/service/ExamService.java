@@ -8,6 +8,7 @@ import com.project.onlineexam.repository.QuestionRepository;
 import com.project.onlineexam.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,6 +57,19 @@ public class ExamService {
                 score++;
             }
         }
+        
+        // Check if there's an existing result (in-progress)
+        Optional<Result> existingResult = resultRepository.findByStudentIdAndExamId(studentId, examId);
+        if (existingResult.isPresent()) {
+            Result result = existingResult.get();
+            result.setScore(score);
+            result.setTotalQuestions(questions.size());
+            result.setStatus("COMPLETED");
+            result.setSubmittedAt(new Date());
+            result.setSavedAnswers(answers);
+            return resultRepository.save(result);
+        }
+        
         Result result = new Result(studentId, examId, score, questions.size());
         return resultRepository.save(result);
     }
@@ -69,7 +83,47 @@ public class ExamService {
     }
 
     public boolean hasAttempted(String studentId, String examId) {
+        Optional<Result> result = resultRepository.findByStudentIdAndExamId(studentId, examId);
+        return result.isPresent() && "COMPLETED".equals(result.get().getStatus());
+    }
+
+    public boolean hasStartedExam(String studentId, String examId) {
         return resultRepository.findByStudentIdAndExamId(studentId, examId).isPresent();
+    }
+
+    public Optional<Result> getInProgressResult(String studentId, String examId) {
+        Optional<Result> result = resultRepository.findByStudentIdAndExamId(studentId, examId);
+        if (result.isPresent() && !"COMPLETED".equals(result.get().getStatus())) {
+            return result;
+        }
+        return Optional.empty();
+    }
+
+    public Result startExam(String studentId, String examId, String photoUrl) {
+        // Check if already started
+        Optional<Result> existing = resultRepository.findByStudentIdAndExamId(studentId, examId);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+        Result result = new Result(studentId, examId, photoUrl);
+        return resultRepository.save(result);
+    }
+
+    public Result saveAnswer(String studentId, String examId, String questionId, String answer) {
+        Optional<Result> resultOpt = resultRepository.findByStudentIdAndExamId(studentId, examId);
+        if (resultOpt.isPresent()) {
+            Result result = resultOpt.get();
+            if (!"COMPLETED".equals(result.getStatus())) {
+                result.getSavedAnswers().put(questionId, answer);
+                result.setStatus("IN_PROGRESS");
+                return resultRepository.save(result);
+            }
+        }
+        return null;
+    }
+
+    public Optional<Result> getResultByStudentAndExam(String studentId, String examId) {
+        return resultRepository.findByStudentIdAndExamId(studentId, examId);
     }
 
     public Question updateQuestion(Question question) {

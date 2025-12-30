@@ -14,3 +14,4 @@ com/project/onlineexam/service/ExamService.class
 com/project/onlineexam/model/Question.class
 com/project/onlineexam/OnlineExamApplication.class
 com/project/onlineexam/config/DataInitializer.class
+com/project/onlineexam/service/CloudinaryService.class
